@@ -2,14 +2,16 @@
 
 import bcrypt
 from dotenv import load_dotenv
+from jose import jwt
+from datetime import datetime ,timedelta,timezone
+import os 
 load_dotenv()
 
 def hash_password(password):
     password_bytes=password.encode()
     hashed=bcrypt.hashpw(password_bytes,bcrypt.gensalt())
-    return  hashed
+    return  hashed.decode()
     # decode it before storing inside the database 
-
 
 #! small mistake
 '''
@@ -18,27 +20,25 @@ as hashed.decode('utf-8')
 
 '''
 def verify_password(password,hashed_password):
-    # This is binary password, as hashed password from db is a string
-    encoded_hash=hash_password.encode()
-    if bcrypt.checkpw(password.encode(),encoded_hash):
-        return {"message":"Its matched"}
-    else:
-        return{"message":"Password did not match"}
+    '''
+    # We are doing this encoding step because the password in db is  in string format
+    # and this .checdkpw needed enoded password
+    #bcrypt library, both arguments to bcrypt.checkpw() need to be bytes, not Python str.
+    '''
+    encoded_hash=hashed_password.encode()
+    return bcrypt.checkpw(password.encode(),encoded_hash)
+    # Note: bcrypt.checkpw returns  Boolean (True/False)
 
-
-#TODO: Dependency to protect routes:
-
-from jose import jwt
-from datetime import datetime ,timedelta,timezone
-
-import os 
 secret_key=os.environ.get("SECRET_KEY")
-
 def create_jwt_token(payload):
 
     token=jwt.encode(payload,secret_key,algorithm='HS256')
 
     return token
+
+#TODO: Dependency to protect routes:
+
+
 
 
 

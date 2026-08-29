@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class UserSignup(BaseModel):
     username:str
     password:str
@@ -8,7 +7,8 @@ class UserSignup(BaseModel):
 class UserLogin(BaseModel):
     username:str
     password:str
- 
-class CreateTask(BaseModel):
-    task_name:str
+
+class Token(BaseModel):
+    access_token:str
+    token_type:str
 

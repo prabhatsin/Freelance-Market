@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi import HTTPException
 
 from schema.schema import UserLogin, UserSignup
 from db.database import get_db
@@ -6,14 +7,18 @@ from fastapi import Depends
 from models.models import User
 from sqlalchemy.orm import Session
 
+from core.security import verify_password,create_jwt_token,hash_password
+
+
 app=FastAPI()
 
 @app.post('/signup')
 def Signup(user_data:UserSignup,db:Session =Depends(get_db)):
     # Creating the instance of User class defined in models.py
+
     new_user=User(
         username=user_data.username,
-        password=user_data.password
+        password=hash_password(user_data.password)
     )
     existing_user=db.query(User).filter(User.username==user_data.username).first()
     if existing_user is None:
@@ -25,12 +30,17 @@ def Signup(user_data:UserSignup,db:Session =Depends(get_db)):
 
 
 @app.post('/login')
-def Login(user_data:UserSignup,db:Session =Depends(get_db)):
+def Login(user_data:UserLogin,db:Session =Depends(get_db)):
     existing_user=db.query(User).filter(User.username==user_data.username).first()
     if existing_user is  None:
-        return {"message: user does not exist"}
+        raise HTTPException (status_code=404,detail="User does not exist")
     else:
-        if user_data.password==existing_user.password:
-            return {"message: User Logged in Successfully"}
-        return {"message: Wrong Password"}
-, 
+        # If verify_password retruns false ..
+        if not verify_password(user_data.password,existing_user.password):
+            raise HTTPException(status_code=401, detail="Incorrect username or password")
+    #password verified continue 
+    payload={"sub":str(existing_user.id)}
+    token=create_jwt_token(payload)
+    return {"access_token":token,"token_type":"bearer"}
+
+

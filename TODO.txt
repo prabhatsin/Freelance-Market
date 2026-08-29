@@ -1,0 +1,6 @@
+1. Implement OAuth2PasswordRequestForm in the Login Endpoint ,
+2. Study OAuth in general and its implementaion in  Fastapi,
+3. Implement async await in this project (understand in depth)
+4. RBAC is something new learned  here 
+
+

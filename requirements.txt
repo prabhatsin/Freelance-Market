@@ -1,4 +1,9 @@
 bcrypt
 fastapi '[standard]'
+python-jose
+python-dotenv
+fastapi'[standard]'
+sqlalchemy
+psycopg2-binary
 
 
