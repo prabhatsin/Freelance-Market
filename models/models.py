@@ -11,28 +11,27 @@ from datetime import date # the Python value type
 
 # This class that we are defining is purely python based it has nopthing to do db , sqlalchemy 
 class UserRole(str,enum.Enum):
-    client="client"
-    freelancer="freelancer"
+    CLIENT="client"
+    FREELANCER="freelancer"
 
 class ProjectStatus(str,enum.Enum):
-    open="open"
-    in_progress="in_progress"
-    completed="completed"
-    cancelled="cancelled"
+    OPEN="open"
+    IN_PROGRESS="in_progress"
+    COMPLETED="completed"
+    CANCELLED="cancelled"
 
 class ProposalStatus(str,enum.Enum):
-    pending="pending"
-    accepted="accepted"
-    rejected="rejected"
+    PENDING="pending"
+    ACCEPTED="accepted"
+    REJECTED="rejected"
 
 class ContractStatus(str, enum.Enum):
-    active = "active"
-    completed = "completed"
-    cancelled = "cancelled"
+    ACTIVE = "active"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
 
 
 #!------------------Below these are sqlalchemy models , above are python enum class ----------
-
 
 class User(Base):
 
@@ -59,7 +58,7 @@ class Project(Base):
     budget_max:Mapped[float]=mapped_column(Numeric(10,2),nullable=False)
     deadline:Mapped[date]=mapped_column(Date,nullable=False)
     #Numeric(10, 2) = up to 10 total digits, 2 after the decimal — standard for currency.
-    status:Mapped[ProjectStatus]=mapped_column(Enum(ProjectStatus),nullable=False) 
+    status:Mapped[ProjectStatus]=mapped_column(Enum(ProjectStatus),nullable=False,default=ProjectStatus.OPEN) 
     created_at:Mapped[datetime]=mapped_column(default=datetime.now)
 
 class Proposals(Base):
@@ -73,7 +72,7 @@ class Proposals(Base):
     submitted_by:Mapped[int]=mapped_column(ForeignKey('users.id'),nullable=False)
     proposed_price:Mapped[float]=mapped_column(Numeric(10,2),nullable=False)
     estimated_duration:Mapped[int]=mapped_column(nullable=False)
-    status:Mapped[ProposalStatus]=mapped_column(Enum(ProposalStatus),nullable=False,default=ProposalStatus.pending) 
+    status:Mapped[ProposalStatus]=mapped_column(Enum(ProposalStatus),nullable=False,default=ProposalStatus.PENDING) 
     cover_letter:Mapped[str]= mapped_column(nullable=False)
     created_at:Mapped[datetime]=mapped_column(default=datetime.now)
 
@@ -85,7 +84,7 @@ class Contracts(Base):
     client_id:Mapped[int]=mapped_column(ForeignKey("users.id"),nullable=False)
     freelancer_id:Mapped[int]=mapped_column(ForeignKey('users.id'),nullable=False)
     proposed_price:Mapped[float]=mapped_column(Numeric(10,2),nullable=False)
-    status:Mapped[ContractStatus]=mapped_column(Enum(ContractStatus),nullable=False, default=ContractStatus.active)
+    status:Mapped[ContractStatus]=mapped_column(Enum(ContractStatus),nullable=False, default=ContractStatus.ACTIVE)
     created_at:Mapped[datetime]=mapped_column(default=datetime.now)
 
 

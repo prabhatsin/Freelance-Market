@@ -1,6 +1,12 @@
 1. Implement OAuth2PasswordRequestForm in the Login Endpoint ,
 2. Study OAuth in general and its implementaion in  Fastapi,
+
 3. Implement async await in this project (understand in depth)
+
 4. RBAC is something new learned  here 
+5. Add open router from fastapi, which collects all the apis in one page 
+
+#Tables me all the enums are are capitals , like CLIENT , which is not expected , figure out the solution 
 
 
+# Learn how to enforce legit mails ?? not some random test mails , 

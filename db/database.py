@@ -47,23 +47,23 @@ class Base(DeclarativeBase):
 #     )
 #     print(result.fetchone())
 
-from sqlalchemy import text
+# from sqlalchemy import text
 
-with engine.connect() as connection:
-    result = connection.execute(text("""
-        SELECT
-            current_user,
-            current_database(),
-            inet_server_addr(),
-            inet_server_port(),
-            version()
-    """))
+# with engine.connect() as connection:
+#     result = connection.execute(text("""
+#         SELECT
+#             current_user,
+#             current_database(),
+#             inet_server_addr(),
+#             inet_server_port(),
+#             version()
+#     """))
 
-    print(result.fetchone())
+#     print(result.fetchone())
 
-    result = connection.execute(text("""
-        SELECT
-            has_schema_privilege(current_user, 'public', 'CREATE')
-    """))
+#     result = connection.execute(text("""
+#         SELECT
+#             has_schema_privilege(current_user, 'public', 'CREATE')
+#     """))
 
-    print("Can create:", result.fetchone())
+#     print("Can create:", result.fetchone())

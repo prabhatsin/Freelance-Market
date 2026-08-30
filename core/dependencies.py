@@ -1,14 +1,71 @@
 # This script is used to implement , auth-check function
 # i.e ,All APIs except signup/login require authentication.  this part 
-#! There are tywo concepts here in fastapi middleware (@app.middleware and Depends())
-
+#! There are two concepts here in fastapi middleware (@app.middleware and Depends())
 '''
 for our use case 
 Conclusion: Use FastAPI Dependencies (Depends()), not @app.middleware("http")
-
 #? Refrer doc: Depends Vs Middleware
-
 '''
+
+
+from fastapi import FastAPI, Header, Depends
+from fastapi import HTTPException, status
+from jose import jwt,JWTError
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+secret_key=os.environ.get("SECRET_KEY")
+algo=os.environ.get("ALGORITHM")
+app = FastAPI()
+def get_current_user(authorization: str = Header()):
+    token = authorization.replace("Bearer ", "")
+    try:
+        payload = jwt.decode(token, secret_key, algorithms=algo)
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token"
+        )
+    return payload
+
+
+
+def get_current_client(current_user:dict=Depends(get_current_user)):
+    if current_user["role"]!='client':
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="Only clients can perform this action")
+    return current_user
+
+
+
+def get_current_freelancer(current_user:dict=Depends(get_current_user)):
+    if current_user["role"]!='freelancer':
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="Only freelancer can perform this action")
+    return current_user
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #! Step1: Understand what header is , what is it used for , 
 
@@ -56,14 +113,3 @@ Notice: your JWT token is not meant to go in the request body alongside your act
 
 '''
 
-from jose import jwt
-from fastapi import Header
-
-SECRET_KEY = "your-secret-key-here"   # same one you used when creating the token at login
-ALGORITHM = "HS256"                    # same one you used when creating the token at login
-
-
-def get_current_user(authorization: str = Header()):
-    token = authorization.replace("Bearer ", "")
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    return payload

@@ -30,6 +30,7 @@ def verify_password(password,hashed_password):
     # Note: bcrypt.checkpw returns  Boolean (True/False)
 
 secret_key=os.environ.get("SECRET_KEY")
+algo=os.environ.get("ALGORITHM")
 def create_jwt_token(payload):
 
     token=jwt.encode(payload,secret_key,algorithm='HS256')
