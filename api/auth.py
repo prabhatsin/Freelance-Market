@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi import HTTPException
+from fastapi import HTTPException,status
 
 from schema.schema import UserLogin, UserSignup
 from db.database import get_db
@@ -21,7 +21,7 @@ def Signup(user_data:UserSignup,db:Session =Depends(get_db)):
         name=user_data.name,
         email=user_data.email,
         password=hash_password(user_data.password),
-        role=UserRole.CLIENT
+        role=user_data.role
 
     )
     existing_user=db.query(User).filter(User.email==user_data.email).first()
@@ -30,7 +30,7 @@ def Signup(user_data:UserSignup,db:Session =Depends(get_db)):
         db.commit() 
         return {"message: A New User Created Succesfully"}
     else:
-        return {"message : User already exist"}
+        raise HTTPException (status_code=status.HTTP_400_BAD_REQUEST,detail="Email Already Exists")
 
 
 @router.post('/login')

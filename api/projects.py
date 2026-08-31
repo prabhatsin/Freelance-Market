@@ -8,7 +8,6 @@ from core.dependencies import get_current_user,get_current_client
 from models.models import Project ,User,Proposals
 
 
-
 router=APIRouter()
 
 @router.post('/projects',response_model=ProjectResponse)
@@ -29,7 +28,6 @@ def create_projects(project_request:CreateProject,
     db.add(new_project)
     db.commit()
     db.refresh(new_project) # # so new_project.id, .status, .created_at get populated with their actual DB-generated values
-
     return new_project
 
 
@@ -52,7 +50,11 @@ def create_projects(project_request:CreateProject,
 # Here we have to perfrom join operation in order to get client_name , proposal_count
 
 @router.get("/projects",response_model=list[ProjectListItem])
-def list_projects(current_user=Depends(get_current_user),db:Session=Depends(get_db)):
+def list_projects(category:str | None=None,
+                  budget_max:str | None=None,
+                  budget_min:str | None=None,
+                  current_user=Depends(get_current_user),
+                  db:Session=Depends(get_db)):
     # Authenticated user meaning , get_current user only (via jwt verification)
     # It shouldnt be client/freelancer based anyone can see it
     statement=(
@@ -72,10 +74,79 @@ def list_projects(current_user=Depends(get_current_user),db:Session=Depends(get_
         .where(Project.status=='OPEN')
         .group_by(Project.id,User.name)
                )
-        
-    print(statement)
+    #? New learning (didnt knew we can do like this)
+    #Since statement is just a variable holding a query object, and .where(...) returns a new query object (it doesn't modify in place)
+    if category is not None:
+        statement=statement.where(Project.category==category)
+
+    if budget_min is not None:
+        statement=statement.where(Project.budget_min>=budget_min)
+
+    if budget_max is not None:
+            statement=statement.where(Project.budget_max<=budget_max)
+            
+    print(statement)# This prints the original query in the sql format
+    # query execution 
     result=db.execute(statement).all()
     return result
+
+
+#! Query Parameter 
+# decoding the syntax, category: str | None = None
+
+'''
+1. category
+
+This is simply the variable/field name.
+
+2. str | None
+
+This is the type annotation. i.e category can either contain a str or None.
+
+category = "Web Development"(string works)
+category = None ( No data type works )
+
+The | means "OR" in a type annotation. This syntax is called a union type and is available in modern Python.
+
+
+3. =None
+
+This gives category a default value of None.
+ eg:
+
+ i) 
+
+{
+    "category": "Web Development"
+}
+
+
+ii) {}
+
+
+
+# One subtle distinction: 'str | None' makes None an allowed value; '= None' makes the field not required because it has a default
+
+ Simply "= Non" means everything works fine even if u dont provide category as a parameter 
+
+
+######
+ 
+
+A useful analogy is a Python function:
+
+def create_project(category=None):
+
+You don't have to provide category:
+
+create_project()
+
+because Python says:
+
+"No category was provided? Fine, I'll use None."
+ 
+
+'''
 
 
 
@@ -85,7 +156,7 @@ def list_projects(current_user=Depends(get_current_user),db:Session=Depends(get_
 #--------------------------------------------------------------------------------------------------
 #? IMPORTANT NOTE:
 # db.query , This the legacy style of querying the db , described in legacy document (v1) 
-# modern style is , described in version 2 
+# modern style is stmt = (select(User).join(User.addresses)) described in version 2 
 
 '''
 stmt = (
@@ -188,20 +259,6 @@ this conversion for you, so manual model_validate() isn't needed.
 
 #Learning ,=> Any column with a default= set in your model does NOT need to be passed when constructing the Python object
 # example , status and created_at  they have  a default value , so they will get filled automatically , 
-
-
-{
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsInJvbGUiOiJjbGllbnQiLCJleHAiOjE3ODgwNDMxNDh9.7quLCDlxtYaSDs3MRLoH_eUSvBoPnADBVJNQ3BEsYa0",
-  "token_type": "bearer"
-}
-    
-
-
-
-
-
-
-
 
 
 

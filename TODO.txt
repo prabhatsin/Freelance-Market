@@ -1,5 +1,6 @@
 1. Implement OAuth2PasswordRequestForm in the Login Endpoint ,
 2. Study OAuth in general and its implementaion in  Fastapi,
+After jwt explore jwe 
 
 3. Implement async await in this project (understand in depth)
 
@@ -10,3 +11,8 @@
 
 
 # Learn how to enforce legit mails ?? not some random test mails , 
+
+Learn andn implement Migrations(ALEMBIC) ,( Have been delaying it again and again) :
+
+
+Implement CORS: and learn what is it , 

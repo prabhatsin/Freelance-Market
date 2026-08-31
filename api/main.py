@@ -2,7 +2,7 @@
 # access all the routes 
 
 from fastapi import FastAPI 
-from api import auth,projects
+from api import auth,projects,proposals
 
 app = FastAPI()
 
@@ -10,6 +10,7 @@ app = FastAPI()
 
 app.include_router(auth.router,prefix="/api/auth",tags=["auth"])
 app.include_router(projects.router,prefix="/api",tags=["projects"])
+app.include_router(proposals.router,prefix='/api',tags=["proposals"])
 
 
 

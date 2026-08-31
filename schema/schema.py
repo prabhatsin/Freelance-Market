@@ -1,10 +1,11 @@
 from pydantic import BaseModel,PositiveFloat,model_validator,field_validator,ConfigDict
 from datetime import date,datetime
-from models.models import ProjectStatus 
+from models.models import ProjectStatus ,ProposalStatus,UserRole
 class UserSignup(BaseModel):
     name:str
     email:str
     password:str
+    role:UserRole
 
 class UserLogin(BaseModel):
     email:str
@@ -35,6 +36,7 @@ class CreateProject(BaseModel):
             raise ValueError("The deadline should be in future")
         return value
 
+#This schema is used to return created_project output from the db
 class ProjectResponse(BaseModel):
     model_config=ConfigDict(from_attributes=True)
     id: int
@@ -47,6 +49,112 @@ class ProjectResponse(BaseModel):
     deadline: date
     status: ProjectStatus
     created_at: datetime
+
+
+class ProjectListItem(BaseModel):
+    #This parameter is mostly used for response model 
+    model_config=ConfigDict(from_attributes=True)
+    id:int
+    project_title: str
+    project_description: str
+    category: str
+    budget_min: PositiveFloat
+    budget_max: PositiveFloat
+    deadline: date
+    status: ProjectStatus
+    client_name:str
+    proposal_count:int
+
+
+
+class  CreateProposals(BaseModel):
+    cover_letter:str
+    proposed_price:PositiveFloat
+    estimated_duration:int
+
+
+'''
+ project_id=project_id,
+        submitted_by=freelancer_id,
+        proposed_price=proposal_request.proposed_price,
+        estimated_duration=proposal_request.estimated_duration,
+        cover_letter
+'''
+
+class ProposalResponse(BaseModel):
+    id:int
+    project_id:int
+    submitted_by:int
+    proposed_price:PositiveFloat
+    estimated_duration:int
+    cover_letter:str
+    status:ProposalStatus
+    created_at:datetime
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
+from_attributes=True tells Pydantic that it is allowed to build a Pydantic model by reading 
+attributes from an object, such as a SQLAlchemy ORM object.
+
+
+1. Usually what happens is normally  pydantic expects data to look like json/dictionary 
+
+{
+    "id": 1,
+    "name": "Akansha",
+    "email": "akansha@example.com",
+    "role": "client"
+}
+
+2. When we query db using orm be get (existing_projects/existing_user , ... these are orm objects),
+
+So you need to tell Pydantic:
+
+"Don't only look for dictionary keys. You can also look at the object's attributes."
+
+thats exactly what 'model_config = ConfigDict(from_attributes=True)' used for 
+
+
+'''
+
+
+
+
+
+
+
+
+
+
 
 
 
