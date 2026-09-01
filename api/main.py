@@ -14,6 +14,17 @@ app.include_router(proposals.router,prefix='/api',tags=["proposals"])
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 # Question whats this auth.router, and projects.router ?? 
 
 '''

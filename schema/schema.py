@@ -72,6 +72,16 @@ class  CreateProposals(BaseModel):
     proposed_price:PositiveFloat
     estimated_duration:int
 
+class ProposalList(BaseModel):
+    proposal_id:int
+    freelancer_id:int
+    freelancer_name:str
+    cover_letter:str
+    proposed_price:float
+    estimated_duration:int
+    status:str
+    created_at:datetime
+
 
 '''
  project_id=project_id,
@@ -92,6 +102,13 @@ class ProposalResponse(BaseModel):
     created_at:datetime
 
 
+# Not needed 
+# class CreateContract(BaseModel):
+#     project_id:int
+#     client_id:int
+#     freelancer_id:int
+#     proposed_price:float
+#     status:str
 
 
 
