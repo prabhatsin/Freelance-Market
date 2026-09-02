@@ -1,13 +1,20 @@
 /myenv
 .env
 
-/db/learnings.py
 
-TODO.txt
+
+/TODO
 
 Complete_Freelancing_Market_Project.docx
 
 __pycache__/
 
 /db/demo_db_connect.py
+/db/learnings.py
 
+
+/core/demo.py
+/core/DependsvsMiddleware.docs
+/core/hashing_learning.py
+/core/JWT_Foundations.docs
+/core/security_learning.py
