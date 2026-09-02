@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select,func
 from schema.schema import CreateProject,ProjectResponse,ProjectListItem
 from core.dependencies import get_current_user,get_current_client
-from models.models import Project ,User,Proposals
+from models.models import Project ,User,Proposals,ProjectStatus
 
 
 router=APIRouter()
@@ -31,20 +31,7 @@ def create_projects(project_request:CreateProject,
     return new_project
 
 
-'''
-    id:int
-    project_title: str
-    project_description: str
-    category: str
-    budget_min: PositiveFloat
-    budget_max: PositiveFloat
-    deadline: date
-    status: ProjectStatus
-    client_name:str
-    proposal_count:int
 
-
-'''
 
 
 # Here we have to perfrom join operation in order to get client_name , proposal_count
@@ -71,7 +58,7 @@ def list_projects(category:str | None=None,
                )
         .join(User,Project.client_id==User.id)
         .outerjoin(Proposals,Project.id==Proposals.project_id)
-        .where(Project.status=='OPEN')
+        .where(Project.status==ProjectStatus.OPEN)
         .group_by(Project.id,User.name)
                )
     #? New learning (didnt knew we can do like this)
@@ -85,7 +72,7 @@ def list_projects(category:str | None=None,
     if budget_max is not None:
             statement=statement.where(Project.budget_max<=budget_max)
             
-    print(statement)# This prints the original query in the sql format
+    # print(statement)# This prints the original query in the sql format
     # query execution 
     result=db.execute(statement).all()
     return result

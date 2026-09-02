@@ -43,7 +43,7 @@ def Login(user_data:UserLogin,db:Session =Depends(get_db)):
         if not verify_password(user_data.password,existing_user.password):
             raise HTTPException(status_code=401, detail="Incorrect username or password")
     #password verified continue 
-    payload={"user_id":str(existing_user.id),"role": existing_user.role,"exp": datetime.now(timezone.utc)+timedelta(minutes=60)}
+    payload={"user_id":str(existing_user.id),"name": str(existing_user.name),"role": existing_user.role,"exp": datetime.now(timezone.utc)+timedelta(minutes=60)}
     token=create_jwt_token(payload)
     return {"access_token":token,"token_type":"bearer"}
 

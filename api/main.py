@@ -6,11 +6,48 @@ from api import auth,projects,proposals
 
 app = FastAPI()
 
-
-
 app.include_router(auth.router,prefix="/api/auth",tags=["auth"])
 app.include_router(projects.router,prefix="/api",tags=["projects"])
 app.include_router(proposals.router,prefix='/api',tags=["proposals"])
+
+
+#TODO: Explore CORS , use case and why is it used for 
+
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

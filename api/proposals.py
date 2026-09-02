@@ -5,39 +5,10 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select,func
 from schema.schema import CreateProposals,ProposalResponse,ProposalList
 from core.dependencies import get_current_freelancer,get_current_client
-from models.models import Project ,Proposals,ProjectStatus,ProposalStatus,User,Contracts
+from models.models import Project,Proposals,User,ProjectStatus,ProposalStatus,Contracts,ContractStatus
 from fastapi import HTTPException,status
 
 router=APIRouter()
-
-'''
-{
-  "cover_letter": "I have 3 years of experience building web applications.",
-  "proposed_price": 75000,
-  "estimated_duration": 20
-}
-
-'''
-
-
-# why {} this bracket and whats the purpose 
-# Here this project_id is path parameter 
-
-
-'''
-### Must handle
-
-- Project doesn't exist
-- Project isn't open
-- User isn't a freelancer
-- Freelancer already submitted a proposal
-- Invalid request body
-
-'''
-'''
-    **Freelancer only**
-    Submit a proposal.
-'''
 
 @router.post("/projects/{project_id}/proposals",response_model=ProposalResponse)
 def sumbit_proposals(proposal_request:CreateProposals,
@@ -126,8 +97,7 @@ def accept_proposal(proposal_id:int,current_client=Depends(get_current_client),d
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="PROPOSAL_NOT_FOUND")
 
     prop_status=result.status
-    if prop_status != ProposalStatus.PENDING: #? check if hardcoded (OPEN) not needed
-        # if prop_status != ProposalStatus.PENDING: #TODO
+    if prop_status != ProposalStatus.PENDING:
         raise  HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="PROPOSAL_ALREADY_PROCESSED")
     
     
@@ -137,12 +107,6 @@ def accept_proposal(proposal_id:int,current_client=Depends(get_current_client),d
     # Now we check  the owner of this project from project table
     stmt_2=select(Project).where(Project.id==proj_id)
     result2=db.execute(stmt_2).scalars().first()
-    '''
-    this part is redundant 
-    if result2 is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="No project exist for this proposal")
-
-    '''
     current_client_id=int(current_client["user_id"])
     if result2.client_id!=current_client_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="This project does not belong to this client")
@@ -150,17 +114,17 @@ def accept_proposal(proposal_id:int,current_client=Depends(get_current_client),d
 
     try:
         # Now if all the above checks are marked , accept the proposal
-        result.status='ACCEPTED' #?ProposalStatus.ACCEPTED
+        result.status=ProposalStatus.ACCEPTED 
         # get all the proposals corresponding to Project of this Proposal and mark theri status as rejected
         proposals_stmt=select(Proposals).where(Proposals.project_id==proj_id)
         proposals_result=db.execute(proposals_stmt).scalars().all() 
         #!Learning : # when we do .all() the object we get is iterable 
         for proposal in proposals_result:
-            if proposal.status=="ACCEPTED":
+            if proposal.status==ProposalStatus.ACCEPTED:
                 continue
-            proposal.status= "REJECTED" #?ProposalStatus.REJECTED
+            proposal.status= ProposalStatus.REJECTED 
         # Set the status of project corresponding to this proposal as 'IN_PROGRESS
-        result2.status='IN_PROGRESS'
+        result2.status=ProposalStatus.IN_PROGRESS
         # extract necessary field for contract object construction
         freelancer_id=result.submitted_by
         proposed_price=result.proposed_price
@@ -175,7 +139,7 @@ def accept_proposal(proposal_id:int,current_client=Depends(get_current_client),d
             client_id=current_client_id,
             freelancer_id=freelancer_id,
             proposed_price=proposed_price,
-            status='ACTIVE'
+            status=ContractStatus.ACTIVE
         )
 
         db.add(new_contract)
