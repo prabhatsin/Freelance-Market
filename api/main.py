@@ -18,12 +18,13 @@ app.include_router(proposals.router,prefix='/api',tags=["proposals"])
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "https://freelance-frontend-yourname.vercel.app",  # your real Vercel URL
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
 
 
 @app.on_event("startup")
