@@ -1,8 +1,7 @@
 bcrypt
-fastapi '[standard]'
-python-jose
+fastapi [standard]
+python-jose[cryptography]
 python-dotenv
-fastapi'[standard]'
 sqlalchemy
 psycopg2-binary
 
