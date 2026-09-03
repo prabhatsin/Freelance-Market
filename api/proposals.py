@@ -124,7 +124,7 @@ def accept_proposal(proposal_id:int,current_client=Depends(get_current_client),d
                 continue
             proposal.status= ProposalStatus.REJECTED 
         # Set the status of project corresponding to this proposal as 'IN_PROGRESS
-        result2.status=ProposalStatus.IN_PROGRESS
+        result2.status=ProjectStatus.IN_PROGRESS
         # extract necessary field for contract object construction
         freelancer_id=result.submitted_by
         proposed_price=result.proposed_price
