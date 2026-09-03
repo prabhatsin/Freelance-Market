@@ -3,6 +3,8 @@
 
 from fastapi import FastAPI 
 from api import auth,projects,proposals
+from fastapi.middleware.cors import CORSMiddleware
+from db.database import Base, engine
 
 app = FastAPI()
 
@@ -13,7 +15,6 @@ app.include_router(proposals.router,prefix='/api',tags=["proposals"])
 
 #TODO: Explore CORS , use case and why is it used for 
 
-from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,6 +25,10 @@ app.add_middleware(
 
 
 
+
+@app.on_event("startup")
+def on_startup():
+    Base.metadata.create_all(bind=engine)
 
 
 
