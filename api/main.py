@@ -20,7 +20,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://freelance-market-frontend.vercel.app",  # your real Vercel URL
+        "https://freelance-market-frontend.vercel.app",
+        "https://freelance-market.prabhatsingh.dev",
     ],
     allow_methods=["*"],
     allow_headers=["*"],
